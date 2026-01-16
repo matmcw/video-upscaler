@@ -106,16 +106,26 @@ copy /y "models\*.param" "dist\VideoUpscaler\models\" >nul
 echo   Models copied.
 echo.
 
+REM Wait for file handles to be released
+echo Waiting for file handles to release...
+timeout /t 3 /nobreak >nul
+
 REM Create ZIP file
 echo Creating ZIP archive...
 set ZIPNAME=VideoUpscaler-v1.0.zip
 if exist "dist\%ZIPNAME%" del "dist\%ZIPNAME%"
 powershell -Command "Compress-Archive -Path 'dist\VideoUpscaler' -DestinationPath 'dist\%ZIPNAME%' -Force"
 if errorlevel 1 (
-    echo.
-    echo ERROR: Failed to create ZIP archive.
-    pause
-    exit /b 1
+    echo   First attempt failed, retrying in 5 seconds...
+    timeout /t 5 /nobreak >nul
+    powershell -Command "Compress-Archive -Path 'dist\VideoUpscaler' -DestinationPath 'dist\%ZIPNAME%' -Force"
+    if errorlevel 1 (
+        echo.
+        echo ERROR: Failed to create ZIP archive. Try closing other applications.
+        echo You can manually ZIP the dist\VideoUpscaler folder.
+        pause
+        exit /b 1
+    )
 )
 echo   Created: dist\%ZIPNAME%
 echo.
