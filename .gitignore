@@ -11,8 +11,8 @@ env/
 dist/
 build/
 
-# PyInstaller
-*.spec
+# PyInstaller (keep build.spec, exclude generated spec files)
+!build.spec
 
 # Binaries (user downloads separately)
 *.exe
