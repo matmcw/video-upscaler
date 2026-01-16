@@ -78,10 +78,11 @@ if exist "build" rmdir /s /q "build"
 echo   Done.
 echo.
 
-REM Run PyInstaller
+REM Activate venv and run PyInstaller
 echo Building executable with PyInstaller...
 echo   This may take a minute...
-pyinstaller build.spec
+call venv\Scripts\activate.bat
+venv\Scripts\pyinstaller.exe build.spec
 if errorlevel 1 (
     echo.
     echo ERROR: PyInstaller build failed.
