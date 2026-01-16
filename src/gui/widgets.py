@@ -290,7 +290,7 @@ class ScaleToggle(QWidget):
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self._buttons: dict[int, QPushButton] = {}
-        self._current_scale = 4
+        self._current_scale = 2
         self._setup_ui()
 
     def _setup_ui(self) -> None:
@@ -303,7 +303,7 @@ class ScaleToggle(QWidget):
         for scale in scales:
             btn = QPushButton(f"{scale}x")
             btn.setCheckable(True)
-            btn.setChecked(scale == 4)
+            btn.setChecked(scale == 2)
             btn.setProperty("class", "scale-toggle")
             btn.setMinimumHeight(36)
             btn.clicked.connect(lambda checked, s=scale: self._on_scale_clicked(s))

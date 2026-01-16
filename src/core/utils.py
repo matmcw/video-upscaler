@@ -136,12 +136,13 @@ def get_realesrgan_path() -> Path:
     return realesrgan_path
 
 
-def validate_models_exist(model_name: str = "realesrgan-x4plus") -> Tuple[Path, Path]:
+def validate_models_exist(model_name: str = "realesr-animevideov3", scale: int = 2) -> Tuple[Path, Path]:
     """
     Validate that the required model files exist.
 
     Args:
-        model_name: Name of the model (without extension).
+        model_name: Name of the model (without scale suffix or extension).
+        scale: Scale factor (2, 3, or 4) for models that have scale variants.
 
     Returns:
         Tuple of (bin_path, param_path) for the model files.
@@ -150,8 +151,15 @@ def validate_models_exist(model_name: str = "realesrgan-x4plus") -> Tuple[Path, 
         BinaryNotFoundError: If model files are not found.
     """
     models_dir = get_models_directory()
-    bin_path = models_dir / f"{model_name}.bin"
-    param_path = models_dir / f"{model_name}.param"
+
+    # animevideov3 has separate files for each scale
+    if model_name == "realesr-animevideov3":
+        full_model_name = f"{model_name}-x{scale}"
+    else:
+        full_model_name = model_name
+
+    bin_path = models_dir / f"{full_model_name}.bin"
+    param_path = models_dir / f"{full_model_name}.param"
 
     missing = []
     if not bin_path.exists():

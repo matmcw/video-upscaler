@@ -36,8 +36,8 @@ class Upscaler:
         self,
         input_dir: Path,
         output_dir: Path,
-        scale: int = 4,
-        model_name: str = "realesrgan-x4plus",
+        scale: int = 2,
+        model_name: str = "realesr-animevideov3",
         progress_callback: Optional[Callable[[int, int, str], None]] = None
     ):
         """
@@ -48,6 +48,7 @@ class Upscaler:
             output_dir: Directory to save upscaled frames.
             scale: Upscale factor (2, 3, or 4).
             model_name: Name of the Real-ESRGAN model to use.
+                       realesr-animevideov3 supports 2x, 3x, 4x.
             progress_callback: Optional callback function(current, total, status).
 
         Raises:
@@ -109,7 +110,7 @@ class Upscaler:
 
         # Validate model files exist
         try:
-            validate_models_exist(self.model_name)
+            validate_models_exist(self.model_name, self.scale)
         except Exception as e:
             raise UpscalingError(str(e))
 

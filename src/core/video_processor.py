@@ -83,8 +83,8 @@ class VideoProcessor(QThread):
         self,
         input_path: Path,
         output_path: Optional[Path] = None,
-        scale: int = 4,
-        model_name: str = "realesrgan-x4plus",
+        scale: int = 2,
+        model_name: str = "realesr-animevideov3",
         parent=None
     ):
         """
@@ -326,8 +326,8 @@ class VideoProcessor(QThread):
 def process_video(
     input_path: Path,
     output_path: Optional[Path] = None,
-    scale: int = 4,
-    model_name: str = "realesrgan-x4plus"
+    scale: int = 2,
+    model_name: str = "realesr-animevideov3"
 ) -> VideoProcessor:
     """
     Create and start a video processor.

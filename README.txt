@@ -20,15 +20,19 @@ FOLDER STRUCTURE
 After setup, your folder should look like this:
 
     VideoUpscaler/
-    ├── VideoUpscaler.exe          <- Main application
-    ├── ffmpeg.exe                 <- Video processing (download required)
-    ├── ffprobe.exe                <- Video analysis (download required)
-    ├── realesrgan-ncnn-vulkan.exe <- AI upscaler (download required)
-    ├── models/                    <- Model files folder
-    │   ├── realesrgan-x4plus.bin  <- Model weights (download required)
-    │   └── realesrgan-x4plus.param <- Model config (download required)
-    ├── temp/                      <- Created automatically during processing
-    └── README.txt                 <- This file
+    ├── VideoUpscaler.exe              <- Main application
+    ├── ffmpeg.exe                     <- Video processing (download required)
+    ├── ffprobe.exe                    <- Video analysis (download required)
+    ├── realesrgan-ncnn-vulkan.exe     <- AI upscaler (download required)
+    ├── models/                        <- Model files folder
+    │   ├── realesr-animevideov3-x2.bin    <- 2x model (download required)
+    │   ├── realesr-animevideov3-x2.param
+    │   ├── realesr-animevideov3-x3.bin    <- 3x model (download required)
+    │   ├── realesr-animevideov3-x3.param
+    │   ├── realesr-animevideov3-x4.bin    <- 4x model (download required)
+    │   └── realesr-animevideov3-x4.param
+    ├── temp/                          <- Created automatically during processing
+    └── README.txt                     <- This file
 
 
 SETUP INSTRUCTIONS
@@ -39,16 +43,17 @@ SETUP INSTRUCTIONS
    - Download "ffmpeg-release-essentials.zip"
    - Extract and copy ffmpeg.exe and ffprobe.exe to this folder
 
-2. DOWNLOAD REAL-ESRGAN
-   - Go to: https://github.com/xinntao/Real-ESRGAN/releases
-   - Download "realesrgan-ncnn-vulkan-vX.X.X-windows.zip"
-   - Extract and copy realesrgan-ncnn-vulkan.exe to this folder
+2. DOWNLOAD REAL-ESRGAN (includes models)
+   - Go to: https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0
+   - Download "realesrgan-ncnn-vulkan-20220424-windows.zip"
+   - Extract and copy:
+     * realesrgan-ncnn-vulkan.exe to this folder
+     * All files from the "models" subfolder to the models/ folder here
 
-3. DOWNLOAD MODEL FILES
-   - Go to: https://github.com/xinntao/Real-ESRGAN/releases
-   - Download the model files (usually included in the Real-ESRGAN release)
-   - Create a "models" folder if it doesn't exist
-   - Copy realesrgan-x4plus.bin and realesrgan-x4plus.param to models/
+   Required model files (for 2x, 3x, 4x upscaling):
+     - realesr-animevideov3-x2.bin and .param
+     - realesr-animevideov3-x3.bin and .param
+     - realesr-animevideov3-x4.bin and .param
 
 
 USAGE
@@ -93,7 +98,8 @@ TROUBLESHOOTING
   -> Download Real-ESRGAN and place the exe in the application folder
 
 "Model files not found"
-  -> Create a 'models' folder and add the .bin and .param files
+  -> Create a 'models' folder and add the realesr-animevideov3 model files
+  -> You need the -x2, -x3, and -x4 versions (.bin and .param for each)
 
 "Vulkan GPU initialization failed"
   -> Update your graphics card drivers

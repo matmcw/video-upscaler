@@ -17,6 +17,7 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QMessageBox,
     QLabel,
+    QLineEdit,
     QFrame,
     QScrollArea,
 )
@@ -105,11 +106,15 @@ class MainWindow(QMainWindow):
         self._video_info = VideoInfoLabel()
         layout.addWidget(self._video_info)
 
-        # Output display (read-only)
-        self._output_label = QLabel("Output: --")
-        self._output_label.setProperty("class", "field-label")
-        self._output_label.setWordWrap(True)
-        layout.addWidget(self._output_label)
+        # Output path (editable)
+        output_label = QLabel("Output path:")
+        output_label.setProperty("class", "field-label")
+        layout.addWidget(output_label)
+
+        self._output_edit = QLineEdit()
+        self._output_edit.setPlaceholderText("Output path will be set automatically...")
+        self._output_edit.textChanged.connect(self._on_output_changed)
+        layout.addWidget(self._output_edit)
 
         # Separator
         layout.addWidget(self._create_separator())
@@ -172,13 +177,20 @@ class MainWindow(QMainWindow):
         input_path = self._input_picker.get_path()
         if input_path:
             self._output_path = generate_output_path(Path(input_path), f"_{scale}x_upscaled")
-            self._output_label.setText(f"Output: {self._output_path.name}")
+            self._output_edit.setText(str(self._output_path))
+
+    def _on_output_changed(self, text: str) -> None:
+        # Update output path when user edits it
+        if text.strip():
+            self._output_path = Path(text.strip())
+        else:
+            self._output_path = None
 
     def _on_input_selected(self, path: str) -> None:
         if not path:
             self._video_info.clear()
             self._output_path = None
-            self._output_label.setText("Output: --")
+            self._output_edit.clear()
             return
 
         try:
@@ -197,17 +209,17 @@ class MainWindow(QMainWindow):
 
             scale = self._scale_toggle.get_scale()
             self._output_path = generate_output_path(input_path, f"_{scale}x_upscaled")
-            self._output_label.setText(f"Output: {self._output_path.name}")
+            self._output_edit.setText(str(self._output_path))
 
         except VideoValidationError as e:
             self._video_info.clear()
             self._output_path = None
-            self._output_label.setText("Output: --")
+            self._output_edit.clear()
             QMessageBox.warning(self, "Invalid Video", str(e))
         except Exception as e:
             self._video_info.clear()
             self._output_path = None
-            self._output_label.setText("Output: --")
+            self._output_edit.clear()
 
     def _on_action_clicked(self) -> None:
         if self._is_processing:
@@ -271,6 +283,7 @@ class MainWindow(QMainWindow):
     def _set_processing_ui_state(self, processing: bool) -> None:
         self._input_picker.set_enabled(not processing)
         self._scale_toggle.set_enabled(not processing)
+        self._output_edit.setEnabled(not processing)
 
         if processing:
             self._action_btn.setText("Cancel")

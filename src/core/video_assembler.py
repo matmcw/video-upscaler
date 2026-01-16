@@ -7,7 +7,8 @@ settings by default.
 """
 
 import subprocess
-import re
+import threading
+import time
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -52,6 +53,7 @@ class VideoAssembler:
         self.progress_callback = progress_callback
         self._cancelled = False
         self._process: Optional[subprocess.Popen] = None
+        self._stderr_output = ""
 
     def cancel(self) -> None:
         """Cancel the assembly process."""
@@ -61,6 +63,14 @@ class VideoAssembler:
                 self._process.terminate()
             except Exception:
                 pass
+
+    def _read_stderr(self, pipe):
+        """Read stderr in a separate thread to prevent blocking."""
+        try:
+            for line in pipe:
+                self._stderr_output += line
+        except Exception:
+            pass
 
     def assemble(self) -> Path:
         """
@@ -73,6 +83,7 @@ class VideoAssembler:
             VideoAssemblyError: If assembly fails.
         """
         self._cancelled = False
+        self._stderr_output = ""
 
         # Get video info if not provided
         if self.video_info is None:
@@ -124,7 +135,6 @@ class VideoAssembler:
         cmd.extend([
             "-pix_fmt", "yuv420p",   # Compatible pixel format
             "-movflags", "+faststart",  # Enable fast start for web playback
-            "-progress", "pipe:1",    # Output progress to stdout
             "-y",                     # Overwrite output
             str(self.output_path)
         ])
@@ -134,48 +144,55 @@ class VideoAssembler:
 
         try:
             # Start FFmpeg process
+            # Use DEVNULL for stdout, capture stderr for errors
             self._process = subprocess.Popen(
                 cmd,
-                stdout=subprocess.PIPE,
+                stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
                 text=True,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
 
-            current_frame = 0
+            # Read stderr in a separate thread to prevent blocking
+            stderr_thread = threading.Thread(
+                target=self._read_stderr,
+                args=(self._process.stderr,),
+                daemon=True
+            )
+            stderr_thread.start()
 
-            # Parse FFmpeg progress output
-            while True:
+            # Monitor progress by checking output file size
+            last_size = 0
+            frames_processed = 0
+
+            while self._process.poll() is None:
                 if self._cancelled:
                     self._process.terminate()
                     raise VideoAssemblyError("Assembly cancelled by user")
 
-                line = self._process.stdout.readline()
-                if not line:
-                    break
-
-                # FFmpeg progress output contains "frame=N" lines
-                if line.startswith("frame="):
-                    try:
-                        frame_num = int(line.split("=")[1].strip())
-                        current_frame = frame_num
+                # Estimate progress from output file size growth
+                if self.output_path.exists():
+                    current_size = self.output_path.stat().st_size
+                    if current_size > last_size:
+                        last_size = current_size
+                        # Rough estimate: assume linear growth
+                        frames_processed = min(frames_processed + 10, total_frames - 1)
 
                         if self.progress_callback:
                             self.progress_callback(
-                                current_frame,
+                                frames_processed,
                                 total_frames,
-                                f"Encoding frame {current_frame}/{total_frames}"
+                                f"Encoding video..."
                             )
-                    except (ValueError, IndexError):
-                        pass
 
-            # Wait for process to complete
-            self._process.wait()
+                time.sleep(0.25)
+
+            # Wait for stderr thread to finish
+            stderr_thread.join(timeout=2.0)
 
             if self._process.returncode != 0:
-                stderr = self._process.stderr.read()
                 raise VideoAssemblyError(
-                    f"FFmpeg encoding failed (code {self._process.returncode}):\n{stderr}"
+                    f"FFmpeg encoding failed (code {self._process.returncode}):\n{self._stderr_output}"
                 )
 
             # Verify output file was created
