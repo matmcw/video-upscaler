@@ -1,0 +1,8 @@
+# Video Upscaler Dependencies
+# Python 3.10+ required
+
+# GUI Framework
+PyQt6>=6.4.0
+
+# Build tools (development only)
+pyinstaller>=5.0.0

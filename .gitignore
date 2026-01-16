@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# PyInstaller
+*.spec
+
+# Binaries (user downloads separately)
+*.exe
+
+# Models (user downloads separately)
+models/*.bin
+models/*.param
+
+# Temp files created during processing
+temp/
+
+# Test videos
+*.mp4
+*.mkv
+*.avi
+*.mov
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
