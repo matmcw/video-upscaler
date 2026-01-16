@@ -78,5 +78,12 @@ VideoUpscaler/
 ## External Dependencies
 - ffmpeg.exe - Video frame extraction and assembly
 - ffprobe.exe - Video metadata extraction
-- realesrgan-ncnn-vulkan.exe - AI upscaling engine
-- Model files: realesrgan-x4plus.bin and realesrgan-x4plus.param
+- realesrgan-ncnn-vulkan.exe - AI upscaling engine (v0.2.5.0 or newer)
+- Model files in models/ folder:
+  - realesr-animevideov3-x2.bin and .param (for 2x upscaling)
+  - realesr-animevideov3-x3.bin and .param (for 3x upscaling)
+  - realesr-animevideov3-x4.bin and .param (for 4x upscaling)
+
+## Default Settings
+- Default scale factor: 2x
+- Default model: realesr-animevideov3 (optimized for video content)

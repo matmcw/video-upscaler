@@ -245,8 +245,8 @@ class Upscaler:
 def upscale_frames(
     input_dir: Path,
     output_dir: Path,
-    scale: int = 4,
-    model_name: str = "realesrgan-x4plus",
+    scale: int = 2,
+    model_name: str = "realesr-animevideov3",
     progress_callback: Optional[Callable[[int, int, str], None]] = None
 ) -> int:
     """
