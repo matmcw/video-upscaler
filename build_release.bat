@@ -63,7 +63,7 @@ if not exist "models\realesr-animevideov3-x4.param" (
 
 if !MISSING!==1 (
     echo.
-    echo ERROR: Required files are missing. See README.txt for download instructions.
+    echo ERROR: Required files are missing. See README.md for download instructions.
     pause
     exit /b 1
 )
@@ -96,7 +96,7 @@ echo Copying external dependencies...
 copy /y "ffmpeg.exe" "dist\VideoUpscaler\" >nul
 copy /y "ffprobe.exe" "dist\VideoUpscaler\" >nul
 copy /y "realesrgan-ncnn-vulkan.exe" "dist\VideoUpscaler\" >nul
-copy /y "README.txt" "dist\VideoUpscaler\" >nul
+copy /y "RELEASE_README.txt" "dist\VideoUpscaler\README.txt" >nul
 echo   Binaries copied.
 
 REM Create models folder and copy models
